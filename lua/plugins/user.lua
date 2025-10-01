@@ -1,88 +1,142 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
--- You can also add or configure plugins by creating files in this `plugins/` folder
--- PLEASE REMOVE THE EXAMPLES YOU HAVE NO INTEREST IN BEFORE ENABLING THIS FILE
--- Here are some examples:
-
 ---@type LazySpec
 return {
-
-  -- == Examples of Adding Plugins ==
-
-  "andweeb/presence.nvim",
   {
-    "ray-x/lsp_signature.nvim",
-    event = "BufRead",
-    config = function() require("lsp_signature").setup() end,
-  },
-
-  -- == Examples of Overriding Plugins ==
-
-  -- customize dashboard options
-  {
-    "folke/snacks.nvim",
-    opts = {
-      dashboard = {
-        preset = {
-          header = table.concat({
-            " █████  ███████ ████████ ██████   ██████ ",
-            "██   ██ ██         ██    ██   ██ ██    ██",
-            "███████ ███████    ██    ██████  ██    ██",
-            "██   ██      ██    ██    ██   ██ ██    ██",
-            "██   ██ ███████    ██    ██   ██  ██████ ",
-            "",
-            "███    ██ ██    ██ ██ ███    ███",
-            "████   ██ ██    ██ ██ ████  ████",
-            "██ ██  ██ ██    ██ ██ ██ ████ ██",
-            "██  ██ ██  ██  ██  ██ ██  ██  ██",
-            "██   ████   ████   ██ ██      ██",
-          }, "\n"),
-        },
-      },
-    },
-  },
-
-  -- You can disable default plugins as follows:
-  { "max397574/better-escape.nvim", enabled = false },
-
-  -- You can also easily customize additional setup of plugins that is outside of the plugin's setup call
-  {
-    "L3MON4D3/LuaSnip",
-    config = function(plugin, opts)
-      require "astronvim.plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
-      -- add more custom luasnip configuration such as filetype extend or custom snippets
-      local luasnip = require "luasnip"
-      luasnip.filetype_extend("javascript", { "javascriptreact" })
+    "catppuccin/nvim",
+    name = "catppuccin",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.flavour = "macchiato"
+      opts.background = { light = "latte", dark = "macchiato" }
+      opts.term_colors = true
+      opts.transparent_background = false
+      opts.integrations = vim.tbl_deep_extend("force", opts.integrations or {}, {
+        cmp = true,
+        gitsigns = true,
+        noice = true,
+        neotree = true,
+        telescope = { enabled = true, style = "nvchad" },
+        indent_blankline = { enabled = true, scope_color = "lavender", colored_indent_levels = false },
+        native_lsp = { enabled = true, inlay_hints = { background = true } },
+        treesitter = true,
+        trouble = true,
+      })
+      return opts
     end,
   },
-
   {
-    "windwp/nvim-autopairs",
-    config = function(plugin, opts)
-      require "astronvim.plugins.configs.nvim-autopairs"(plugin, opts) -- include the default astronvim config that calls the setup call
-      -- add more custom autopairs configuration such as custom rules
-      local npairs = require "nvim-autopairs"
-      local Rule = require "nvim-autopairs.rule"
-      local cond = require "nvim-autopairs.conds"
-      npairs.add_rules(
-        {
-          Rule("$", "$", { "tex", "latex" })
-            -- don't add a pair if the next character is %
-            :with_pair(cond.not_after_regex "%%")
-            -- don't add a pair if  the previous character is xxx
-            :with_pair(
-              cond.not_before_regex("xxx", 3)
-            )
-            -- don't move right when repeat character
-            :with_move(cond.none())
-            -- don't delete if the next character is xx
-            :with_del(cond.not_after_regex "xx")
-            -- disable adding a newline when you press <cr>
-            :with_cr(cond.none()),
+    "folke/noice.nvim",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.presets = vim.tbl_deep_extend("force", opts.presets or {}, {
+        bottom_search = false,
+        command_palette = true,
+        long_message_to_split = true,
+        lsp_doc_border = true,
+      })
+      opts.views = vim.tbl_deep_extend("force", opts.views or {}, {
+        cmdline_popup = { border = { style = "rounded" } },
+        confirm = { border = { style = "rounded" } },
+      })
+      return opts
+    end,
+  },
+  {
+    "folke/trouble.nvim",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.use_diagnostic_signs = true
+      return opts
+    end,
+  },
+  {
+    "folke/todo-comments.nvim",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.highlight = vim.tbl_deep_extend("force", opts.highlight or {}, { multiline = false })
+      return opts
+    end,
+  },
+  {
+    "ahmedkhalf/project.nvim",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.manual_mode = false
+      opts.detection_methods = { "lsp", "pattern" }
+      opts.patterns = { ".git", "go.mod", "go.work", "package.json", "pyproject.toml" }
+      return opts
+    end,
+  },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.indent = vim.tbl_deep_extend("force", opts.indent or {}, {
+        char = "│",
+        tab_char = "│",
+      })
+      opts.scope = vim.tbl_deep_extend("force", opts.scope or {}, {
+        enabled = true,
+        show_start = false,
+        highlight = "Function",
+      })
+      return opts
+    end,
+  },
+  {
+    "zbirenbaum/copilot.lua",
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.panel = vim.tbl_deep_extend("force", opts.panel or {}, {
+        enabled = true,
+        auto_refresh = true,
+      })
+      opts.suggestion = vim.tbl_deep_extend("force", opts.suggestion or {}, {
+        enabled = true,
+        auto_trigger = true,
+        debounce = 75,
+        keymap = {
+          accept = "<M-l>",
+          next = "<M-]>",
+          prev = "<M-[>",
+          dismiss = "<C-]>",
         },
-        -- disable for .vim files, but it work for another filetypes
-        Rule("a", "a", "-vim")
-      )
+      })
+      opts.filetypes = vim.tbl_deep_extend("force", opts.filetypes or {}, {
+        markdown = false,
+        help = false,
+      })
+      return opts
+    end,
+  },
+  {
+    "ray-x/go.nvim",
+    ft = { "go", "gomod", "gowork", "gotmpl" },
+    dependencies = {
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    build = ':lua require("go.install").update_all_sync()',
+    opts = {
+      lsp_cfg = false,
+      lsp_keymaps = false,
+      lsp_gofumpt = true,
+      gofmt = "gofumpt",
+      goimports = "goimports",
+      fillstruct = "gopls",
+      icons = false,
+    },
+    config = function(_, opts)
+      require("go").setup(opts)
+    end,
+  },
+  {
+    "leoluz/nvim-dap-go",
+    ft = { "go", "gomod" },
+    dependencies = { "mfussenegger/nvim-dap" },
+    config = function(_, opts)
+      require("dap-go").setup(opts)
     end,
   },
 }

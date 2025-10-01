@@ -24,4 +24,8 @@ if not pcall(require, "lazy") then
 end
 
 require "lazy_setup"
+
+vim.keymap.set("n", "<S-h>", vim.cmd.bprevious, { desc = "Previous buffer", silent = true })
+vim.keymap.set("n", "<S-l>", vim.cmd.bnext, { desc = "Next buffer", silent = true })
+
 require "polish"
