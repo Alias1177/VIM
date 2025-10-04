@@ -139,4 +139,13 @@ return {
       require("dap-go").setup(opts)
     end,
   },
+  {
+    "someone-stole-my-name/yaml-companion.nvim",
+    lazy = false,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+  },
+
 }

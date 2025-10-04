@@ -15,9 +15,26 @@ return {
       { "go", "gomod", "gowork", "gotmpl" }
     )
 
-    opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "gopls" })
+    opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "gopls", "yamlls" })
+
+    local yaml_config = nil
+    local ok, yaml_companion = pcall(require, "yaml-companion")
+    if ok then
+      yaml_config = yaml_companion.setup {
+        builtin_matchers = {
+          kubernetes = { enabled = true },
+        },
+      }
+      pcall(function()
+        require("telescope").load_extension "yaml_schema"
+      end)
+    end
 
     opts.config = opts.config or {}
+
+    if yaml_config then
+      opts.config.yamlls = vim.tbl_deep_extend("force", yaml_config, opts.config.yamlls or {})
+    end
     opts.config.gopls = vim.tbl_deep_extend("force", opts.config.gopls or {}, {
       settings = {
         gopls = {

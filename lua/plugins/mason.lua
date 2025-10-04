@@ -11,6 +11,7 @@ return {
           "stylua",
           "debugpy",
           "tree-sitter-cli",
+          "yaml-language-server",
           -- Go tooling
           "gopls",
           "goimports",

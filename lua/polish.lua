@@ -3,6 +3,23 @@ local go_group = vim.api.nvim_create_augroup("AstroGoExtras", { clear = true })
 -- Make <C-c> behave like <Esc> so InsertLeave autocmds still run when leaving insert mode
 vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Exit insert", silent = true })
 
+local function save_if_writable()
+  if vim.bo.buftype ~= "" then return end
+  if not vim.bo.modifiable or vim.bo.readonly then return end
+  if vim.api.nvim_buf_get_name(0) == "" or not vim.bo.modified then return end
+
+  vim.cmd("silent! update")
+end
+
+-- Auto-save when toggling between insert and normal modes
+local mode_switch_group = vim.api.nvim_create_augroup("UserAutoSaveModeSwitch", { clear = true })
+
+vim.api.nvim_create_autocmd("ModeChanged", {
+  group = mode_switch_group,
+  pattern = { "i:n", "n:i" },
+  callback = save_if_writable,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
   group = go_group,
   pattern = { "go", "gomod", "gowork" },

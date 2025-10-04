@@ -17,4 +17,5 @@ return {
   { import = "astrocommunity.indent.indent-blankline-nvim" },
   -- theme collection
   { import = "astrocommunity.colorscheme.catppuccin" },
+  { import = "astrocommunity.pack.yaml" },
 }
