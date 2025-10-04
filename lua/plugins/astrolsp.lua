@@ -32,8 +32,20 @@ return {
 
     opts.config = opts.config or {}
 
+    local yaml_settings = {
+      settings = {
+        yaml = {
+          schemaStore = { enable = false, url = "" },
+          schemas = {},
+        },
+      },
+      filetypes = { "yaml", "yml", "yaml.docker-compose" },
+    }
+
     if yaml_config then
-      opts.config.yamlls = vim.tbl_deep_extend("force", yaml_config, opts.config.yamlls or {})
+      opts.config.yamlls = vim.tbl_deep_extend("force", yaml_config, yaml_settings, opts.config.yamlls or {})
+    else
+      opts.config.yamlls = vim.tbl_deep_extend("force", yaml_settings, opts.config.yamlls or {})
     end
     opts.config.gopls = vim.tbl_deep_extend("force", opts.config.gopls or {}, {
       settings = {
