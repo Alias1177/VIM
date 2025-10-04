@@ -21,10 +21,6 @@ return {
     local ok, yaml_companion = pcall(require, "yaml-companion")
     if ok then
       yaml_config = yaml_companion.setup {
-        builtin_matchers = {
-          kubernetes = { enabled = false },
-          cloud_init = { enabled = false },
-        },
         lspconfig = {
           filetypes = { "yaml", "yml", "yaml.docker-compose" },
         },
