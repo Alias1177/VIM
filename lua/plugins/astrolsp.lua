@@ -17,9 +17,22 @@ return {
 
     opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "gopls", "yamlls" })
 
+    local yaml_config = nil
+    local ok, yaml_companion = pcall(require, "yaml-companion")
+    if ok then
+      yaml_config = yaml_companion.setup {
+        lspconfig = {
+          filetypes = { "yaml", "yml", "yaml.docker-compose" },
+        },
+      }
+      pcall(function()
+        require("telescope").load_extension "yaml_schema"
+      end)
+    end
+
     opts.config = opts.config or {}
 
-    opts.config.yamlls = vim.tbl_deep_extend("force", {
+    local yaml_settings = {
       settings = {
         yaml = {
           schemaStore = { enable = false, url = "" },
@@ -27,7 +40,13 @@ return {
         },
       },
       filetypes = { "yaml", "yml", "yaml.docker-compose" },
-    }, opts.config.yamlls or {})
+    }
+
+    if yaml_config then
+      opts.config.yamlls = vim.tbl_deep_extend("force", yaml_config, yaml_settings, opts.config.yamlls or {})
+    else
+      opts.config.yamlls = vim.tbl_deep_extend("force", yaml_settings, opts.config.yamlls or {})
+    end
     opts.config.gopls = vim.tbl_deep_extend("force", opts.config.gopls or {}, {
       settings = {
         gopls = {
