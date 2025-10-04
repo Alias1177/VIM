@@ -11,6 +11,28 @@ local function save_if_writable()
   vim.cmd("silent! update")
 end
 
+local function list_lsp_clients(opts)
+  if not vim.lsp then return {} end
+
+  if type(vim.lsp.get_clients) == "function" then
+    return vim.lsp.get_clients(opts)
+  end
+
+  if type(vim.lsp.buf_get_clients) == "function" then
+    if type(opts) == "table" and opts.bufnr then
+      return vim.lsp.buf_get_clients(opts.bufnr)
+    end
+    if type(opts) == "number" then return vim.lsp.buf_get_clients(opts) end
+    return vim.lsp.buf_get_clients()
+  end
+
+  if type(vim.lsp.get_active_clients) == "function" then
+    return vim.lsp.get_active_clients()
+  end
+
+  return {}
+end
+
 -- Auto-save when toggling between insert and normal modes
 local mode_switch_group = vim.api.nvim_create_augroup("UserAutoSaveModeSwitch", { clear = true })
 
@@ -54,7 +76,7 @@ vim.api.nvim_create_autocmd("InsertLeave", {
     if vim.api.nvim_buf_get_name(buf) == "" or not vim.bo[buf].modified then return end
 
     local has_gopls = false
-    for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = buf })) do
+    for _, client in ipairs(list_lsp_clients({ bufnr = buf })) do
       if client.name == "gopls" then
         has_gopls = true
         break
